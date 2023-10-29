@@ -7,6 +7,19 @@ import java.util.HashSet;
 
 
 public class Main {
+
+    public static File[] sortFiles(File[] files){
+        for(int i=0; i<files.length-1; i++){
+            for(int j=0; j<files.length-1; j++){
+                if(files[i].lastModified() < files[i+1].lastModified()){
+                    File temp = files[i];
+                    files[i] = files[i+1];
+                    files[i+1] = temp;
+                }
+            }
+        }
+        return files;
+    }
     public static int[] countSeverity(StringBuilder text){
         String[] find = text.toString().split("\\s+");
         int[] counter = new int[6];
@@ -62,8 +75,12 @@ public class Main {
             System.exit(0);
         }
         else{
-            System.out.println("Directory '"+path+"' exist.\n");
+            if(files == null){
+                System.out.println("Error");
+                System.exit(0);
+            }
 
+            System.out.println("Directory '"+path+"' exist.\n");
 
             if (files.length == 0) {
                 System.out.println("Directory is empty.\n");
@@ -71,25 +88,15 @@ public class Main {
             }
             else{
                 //sort files
-                for(int i=0; i<files.length-1; i++){
-                    for(int j=0; j<files.length-1; j++){
-                        if(files[i].lastModified() < files[i+1].lastModified()){
-                            File temp = files[i];
-                            files[i] = files[i+1];
-                            files[i+1] = temp;
-                        }
-                    }
-                }
+                File[] sortedFiles = sortFiles(files);
 
                 //print files
-                for (File file : files) {
+                for (File file : sortedFiles) {
                     Date date = new Date(file.lastModified());
                     System.out.println(file+"  :  "+date+"\n");
                 }
 
-
-
-                for (File file : files) {
+                for (File file : sortedFiles) {
                     Scanner scan;
 
                     try {
@@ -117,8 +124,9 @@ public class Main {
                     //print entire content of log
                     //System.out.println(lines);
 
-                    //print read time
                     System.out.println("\n#################### FILE "+file.getName()+" ####################");
+
+                    //print read time
                     System.out.println("\nRead time: "+calculateTime + "ms");
 
                     //print severity count
