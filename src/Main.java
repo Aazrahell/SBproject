@@ -1,10 +1,9 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.*;
 import java.util.Date;
-import java.util.Scanner;
-import java.util.HashSet;
-
-
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 public class Main {
 
@@ -20,8 +19,51 @@ public class Main {
         }
         return files;
     }
+
+    public static void logsDate(StringBuilder text){
+        String[] find = text.toString().split("\\s+");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        StringBuilder dates = new StringBuilder();
+
+        for(String d : find){
+            if (d.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                try {
+                    format.parse(d);
+                    Date date2 = format.parse(d);
+                    long millis = date2.getTime();
+                    int days = ((int) (millis / (1000*60*60*24)));
+                    dates.append(days).append(" ");
+                    //System.out.println(days);
+                } catch (ParseException e) {
+                    System.out.println("Error: "+e);
+                }
+
+            }
+        }
+        String[] datesStrings = dates.toString().split("\\s+");
+        int newestNumber = 0;
+        int oldestNumber = 0;
+
+        for(int i=0; i<datesStrings.length-1; i++){
+            int n1 = Integer.parseInt(datesStrings[i]);
+            int n2 = Integer.parseInt(datesStrings[i+1]);
+            //System.out.println(n1);
+
+            if(n1 > n2){
+                newestNumber = n1;
+            }
+            if(n1 > n2){
+                oldestNumber = n2;
+            }
+        }
+
+        int diffDate = newestNumber - oldestNumber;
+        System.out.println("\nDifference between newest and oldest log = "+diffDate+" days.");
+    }
     public static int[] countSeverity(StringBuilder text){
         String[] find = text.toString().split("\\s+");
+
+        //System.out.println();
         int[] counter = new int[6];
         HashSet<String> uniqueLibs = new HashSet<>();
 
@@ -66,6 +108,7 @@ public class Main {
 
     public static void main(String[] args) {
         String path = "D:\\logs";
+
         File dir = new File(path);
 
         File[] files = dir.listFiles();
@@ -141,6 +184,8 @@ public class Main {
                     }
 
                     System.out.println("\nERROR and higher/All logs\n"+fatalerrorCounter+"/"+sumSeverity);
+
+                    logsDate(lines);
                 }
             }
         }
